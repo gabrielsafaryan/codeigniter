@@ -103,7 +103,10 @@ $(document).ready(function () {
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']]
     });
 
-    formsListDtb.on('click', 'tbody tr', function () {
+    formsListDtb.on('click', 'tbody tr', function (e) {
+        if(e.target.closest('.pdf-download') !== null) {
+            return ;
+        }
         let data = formsListDtb.row(this).data();
 
         $.post('/record/get', {id: data.id})
