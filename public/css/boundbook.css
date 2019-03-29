@@ -1,0 +1,64 @@
+.cwpos {
+    background: #ececec;
+}
+
+.cwpos .card {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: #FFF;
+}
+
+.cwpos .multi-in-one {
+    margin-bottom: 10px
+}
+
+.cwpos .btn-group-toggle .btn {
+    background: #000;
+    color: #aaa;
+    border-color: #000
+}
+
+.cwpos .btn-group-toggle .btn.active, .cwpos .btn.btn-success {
+    background: #007c7c;
+    border-color: #007c7c
+}
+
+.cwpos .btn:hover, .cwpos .btn.active:hover {
+    background: #124e4e;
+    border-color: #124e4e;
+    color: #FFF;
+}
+
+@media (min-width: 1000px) {
+    .cwpos .card-3 .card {
+        min-height: 550px;
+    }
+}
+
+#responseModalLabel {
+    text-transform: capitalize;
+}
+
+#foreignCountry {
+    display: none;
+}
+
+#citizenship {
+    display: none;
+}
+
+#forms-list tbody tr:hover {
+    background-color: rgba(18, 78, 78, 0.36);
+}
+
+#forms-list tbody tr {
+    cursor: pointer;
+}
+.row-fields {
+    display: none;
+}
+
+.modal-body .row-fields{
+    overflow-y: auto;
+    height: 300px;
+}
