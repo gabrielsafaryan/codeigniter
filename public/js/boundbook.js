@@ -61,6 +61,7 @@ $(document).ready(function () {
             });
     });
 
+
     let formsListDtb = $('#forms-list').DataTable({
         searchPane: true,
         ajax: {

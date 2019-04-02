@@ -37,7 +37,6 @@ class BoundbookController extends CI_Controller
             $signature = str_replace('[removed]', 'data:image/png;base64,', $this->input->post('signature'));
         }
 
-
         $data = array(
             'first_name_1' => $formData['fName'],
             'middle_name_1' => $formData['mName'],

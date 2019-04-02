@@ -18,6 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <title>Coreware</title>
     <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css"/>
     <link href="<?= base_url('/public/css/boundbook.css'); ?>" rel="stylesheet" type="text/css"/>
+
     <script>
         base_url = '<?php echo base_url();?>';
     </script>
