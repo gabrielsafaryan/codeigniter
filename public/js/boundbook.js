@@ -26,9 +26,9 @@ $(document).ready(function () {
 
     $('input[type=radio][name=residencyCountry]').on('change', function () {
         if ($(this).val() === '0') {
-            $('#citizenship').show();
+            $('.citizenship').show();
         } else {
-            $('#citizenship').hide();
+            $('.citizenship').hide();
         }
     });
 
@@ -40,11 +40,12 @@ $(document).ready(function () {
             signature = signaturePad.toDataURL();
         }
 
-        let data = {
-            formData: $('#buyerForm').serialize() + '&signature=' + signature
+            let data = {
+            formData: $('#buyerForm').serialize(),
+            signature:signature
         };
 
-        $.post('/save-boundbook-form', data)
+        $.post(base_url+'save-boundbook-form', data)
             .done(function (response) {
                 if (response.status === 'success') {
                     $('#responseModalLabel').html(response.status);
@@ -63,7 +64,7 @@ $(document).ready(function () {
     let formsListDtb = $('#forms-list').DataTable({
         searchPane: true,
         ajax: {
-            'url': '/list/get',
+            'url': base_url+'list/get',
             'type': 'post'
         },
         processing: true,
@@ -94,7 +95,7 @@ $(document).ready(function () {
                 title: "Download",
                 orderable: false,
                 render: function (data, type, row) {
-                    return `<a class="pdf-download" href="/pdf/download?id=${row.id}"> 
+                    return `<a class="pdf-download" href="${base_url}pdf/download?id=${row.id}"> 
                               <button class="btn btn-success pdf-download">PDF</button>
                             </a>`;
                 }
@@ -109,7 +110,7 @@ $(document).ready(function () {
         }
         let data = formsListDtb.row(this).data();
 
-        $.post('/record/get', {id: data.id})
+        $.post(base_url+'record/get', {id: data.id})
             .done(function (response) {
                 if (response.status === 'success') {
                     $('#responseModalLabel').html(response.status);

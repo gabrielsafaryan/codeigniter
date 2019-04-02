@@ -191,7 +191,7 @@
                         </div>
                     </div>
                     <div class="col-sm">
-                        <select class="form-control multi-in-one" name="otherCountryCitizen">
+                        <select class="form-control multi-in-one citizenship" name="otherCountryCitizen">
                             <option value="">Citizenship</option>
                             <option>2</option>
                             <option>3</option>
