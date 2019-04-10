@@ -2,6 +2,7 @@
 
 class PdfForm
 {
+
     /*
   * Path to raw PDF form
   * @var string
@@ -32,6 +33,8 @@ class PdfForm
      */
     public function __construct($params)
     {
+        $this->CI = get_instance();
+        $this->CI->load->library('fpdf');
         $this->pdfUrl = $params['pdfUrl'];
         $this->data = $params['data'];
     }
@@ -100,9 +103,11 @@ class PdfForm
     {
         $fdf = $this->makeFdf($this->data);
         $this->output = $this->tmpfile();
-        exec("pdftk {$this->pdfUrl} fill_form {$fdf} output {$this->output} {$this->flatten}");
 
-        unlink($fdf);
+        $path = FCPATH.'/public/created_ci.pdf';
+        exec("pdftk {$this->pdfUrl} fill_form {$fdf} output {$path} {$this->flatten}");
+
+        //unlink($fdf);
     }
 
     /**
@@ -141,21 +146,44 @@ class PdfForm
             $this->generate();
         }
 
-        $filepath = $this->output;
+        $path = FCPATH.'/public/created_ci.pdf';
+        $this->CI->fpdf->AddPage();
+        $this->CI->fpdf->AddPage();
+        $image_name = $this->data['signature'];
 
+        $this->CI->fpdf->Image(FCPATH."public/images/{$image_name}",50,47,12,12,NULL,$path);
+        $this->CI->fpdf->AddPage();
+        $this->CI->fpdf->AddPage();
+        $this->CI->fpdf->AddPage();
+        $this->CI->fpdf->AddPage();
+        $this->CI->fpdf->Output('F');
+        $signature = FCPATH.'doc.pdf';
+        $output = FCPATH.'/public/created_ci3.pdf';
 
-        if (file_exists($filepath)) {
+        exec("pdftk  {$path} multistamp {$signature} output {$output}");
+        $return_data = [];
+        if (file_exists($output)) {
 
             header('Content-Description: File Transfer');
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: attachment; filename=' . uniqid(gethostname()) . '.pdf');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='.basename($output));
+            header('Content-Transfer-Encoding: binary');
             header('Expires: 0');
-            header('Cache-Control: must-revalidate');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($filepath));
+            header('Content-Length: ' . filesize($output));
+            ob_clean();
+            flush();
+            readfile($output);
 
-            readfile($filepath);
-            exit;
+            $return_data = [
+                'output'    => $output,
+                'signature' => $signature,
+                'path'      => $path,
+
+            ];
         }
+
+        return $return_data;
     }
 }

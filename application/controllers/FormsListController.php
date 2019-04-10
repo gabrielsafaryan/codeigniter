@@ -114,7 +114,7 @@ class FormsListController extends CI_Controller
             'form1[0].page1[0].RadioButtonList12[0]' => intval($record['alien_12d']) ? 1 : 2,
             'form1[0].page1[0].RadioButtonList13[0]' => (intval($record['alien_exceptions_12e']) === 1) ? 1 : ((intval($record['alien_exceptions_12e']) === 2) ? 3 : 2),
             'form1[0].page1[0].TextField21[0]' => $record['alient_admission_number_12f'],
-            'form1[0].page2[0].ImageField1[0]' => $record['signature_14'],
+            'signature' => $record['signature_14'],
             'form1[0].page2[0].DateField1[0]' => date('F d Y', strtotime($record['date_filled_14'])),
         );
 
@@ -124,7 +124,16 @@ class FormsListController extends CI_Controller
         ];
 
         $this->load->library('PDFtk/PdfForm', $params, 'pdfForm');
-        $this->pdfForm->flatten()->download();
+        $result = $this->pdfForm->flatten()->download();
+
+        if(!empty($result)){
+            unlink($result['output']);
+            unlink($result['signature']);
+            unlink($result['path']);
+
+        }else{
+            show_404();
+        }
     }
 
     /**
@@ -199,7 +208,8 @@ class FormsListController extends CI_Controller
                 } elseif ($filter[$k]['type'] === 'date') {
                     $value = date('M d Y', strtotime($v));
                 } elseif ($filter[$k]['type'] === 'blob') {
-                    $url = $v;
+
+                    $url = base_url() . 'public/images/' . $v;
                     $value = "<img src='$url' alt='Signature'/>";
 
                 } else {
@@ -216,5 +226,15 @@ class FormsListController extends CI_Controller
             ->set_content_type('application / json')
             ->set_output(json_encode(['status' => 'success', 'filterdData' => $filterdData]));
 
+    }
+
+    public function page_pdf($id=NULL){
+
+        if(empty($id)){
+            show_404();
+            return false;
+        }
+
+        $this->load->view('pdf/print_pdf');
     }
 }

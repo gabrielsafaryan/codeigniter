@@ -30,11 +30,24 @@ class BoundbookController extends CI_Controller
             return $this->output->set_status_header(422)->set_content_type('application/json')->set_output(json_encode($validate['errors']));
         }
         $this->load->helper('measure');
-        $signature = '';
+        $image_name = '';
+
+        $this->load->helper('string');
 
         if($this->input->post('signature') != ''){
 
-            $signature = str_replace('[removed]', 'data:image/png;base64,', $this->input->post('signature'));
+            $signature = str_replace('[removed]', '', $this->input->post('signature'));
+            $signature = base64_decode($signature);
+
+            $dir = FCPATH.'/public/images';
+
+            if(!is_dir($dir)){
+                mkdir($dir, 0775, TRUE);
+            }
+
+            $image_name = random_string('alnum', 16).'.png';
+
+            file_put_contents($dir.'/'.$image_name, $signature);
         }
 
         $data = array(
@@ -83,7 +96,7 @@ class BoundbookController extends CI_Controller
             'phone' => $formData['phoneNumber'],
             'email' => $formData['email'],
             'unique_personal_identification_number_9' => $formData['upin'],
-            'signature_14' => $signature,
+            'signature_14' => $image_name,
         );
 
         $this->load->model('BoundbookModel', 'boundbook');
