@@ -7,6 +7,15 @@ class BoundbookController extends CI_Controller
     /**
      * Index Page for this controller.
      */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('BoundbookModel', 'boundbook');
+        $this->load->model('SecD_firearms_model', 'SecD_firearms');
+        $this->load->helper('string');
+    }
+
+
     public function index()
     {
 
@@ -32,22 +41,13 @@ class BoundbookController extends CI_Controller
         $this->load->helper('measure');
         $image_name = '';
 
-        $this->load->helper('string');
-
-        if($this->input->post('signature') != ''){
+        if ($this->input->post('signature') != '') {
 
             $signature = str_replace('[removed]', '', $this->input->post('signature'));
             $signature = base64_decode($signature);
 
-            $dir = FCPATH.'/public/images';
+            $image_name = random_string('alnum', 16) . '.png';
 
-            if(!is_dir($dir)){
-                mkdir($dir, 0775, TRUE);
-            }
-
-            $image_name = random_string('alnum', 16).'.png';
-
-            file_put_contents($dir.'/'.$image_name, $signature);
         }
 
         $data = array(
@@ -99,10 +99,20 @@ class BoundbookController extends CI_Controller
             'signature_14' => $image_name,
         );
 
-        $this->load->model('BoundbookModel', 'boundbook');
-        $result = $this->boundbook->saveFromData($data);
-        if (!$result) {
+        $return_id = $this->boundbook->saveFromData($data);
+        if (!$return_id) {
             return $this->output->set_status_header(500)->set_content_type('application/json')->set_output(array('error' => 'An error has occurred, please try again!'));
+        }
+
+        if ($image_name != '') {
+
+            $dir = FCPATH . '/public/images/' . $return_id;
+
+            if (!is_dir($dir)) {
+                mkdir($dir, 0775, TRUE);
+            }
+
+            file_put_contents($dir . '/' . $image_name, $signature);
         }
 
         return $this->output
@@ -352,10 +362,260 @@ class BoundbookController extends CI_Controller
 
     }
 
-    public function test()
+    public function fill_sectionB($id = NULL)
     {
 
-        echo '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAACWCAYAAACvgFEsAAAOt0lEQVR4Xu2dCfB31RjHv5F9jezSwhCyJMIQCcmStShlG8LQWFKWjKYsJYRKDJKxVXYRmSEqIYXKlkhGoSShJJFlvr3n19z3uvf3u/d399/zOTNN77zvvec8z+c5/+//3LM8Zx1RIAABCAQlsE5Qv3EbAhCAgBBAOgEEIBCWAAIYNvQ4DgEIIID0AQhAICwBBDBs6HEcAhBAAOkDEIBAWAIIYNjQ4zgEIIAA0gcgAIGwBBDAsKHHcQhAAAGkD0AAAmEJIIBhQ4/jEIAAAkgfgAAEwhJAAMOGHschAAEEkD4AAQiEJYAAhg09jkMAAgggfQACEAhLAAEMG3ochwAEEED6AAQgEJYAAhg29DgOAQgggPQBCEAgLAEEMGzocRwCEEAA6QMQgEBYAghg2NDjOAQggADSByAAgbAEEMCwocdxCEAAAaQPQAACYQkggGFDj+MQgAACSB+AAATCEkAAw4YexyEAAQSQPgABCIQlgACGDT2OQwACCCB9AAIQCEsAAQwbehyHAAQQQPoABCAQlgACGDb0OA4BCCCA9AEIQCAsAQQwbOhxHAIQQADpAxCAQFgCCGDY0OM4BCCAANIHIACBsAQQwLChx3EIQAABpA9AAAJhCSCAYUOP4xCAAAJIH4AABMISQADDhh7HIQABBJA+AAEIhCWAAIYNPY5DAAIIIH0AAhAISwABDBt6HIcABBBA+gAEIBCWAAIYNvQ4DgEIIID0AQhAICwBBDBs6HEcAhBAAOkDEIBAWAIIYNjQ4zgEIIAA0gcgAIGwBBDAsKHHcQhAAAGkD0AAAmEJIIBhQ4/jEIAAAkgfgAAEwhJAAMOGHschAAEEkD4AAQiEJYAAhg09jkMAAgggfQACEAhLAAEMG3ochwAEEED6AAQgEJYAAhg29DgOAQgggPQBCEAgLAEEMGzocRwCEEAA6QMQgEBYAghg2NDjOAQggADSByAAgbAEEMCwocdxCEAAAaQPQAACYQkggGFDj+MQgAACSB+AAATCEkAAw4YexyEAAQSQPgABCIQlgACGDT2OQwACCCB9AAIQCEsAAQwbehyHAAQQQPoABCAQlgACGDb0OA4BCCCA9AEIQCAsAQQwbOhxHAIQQADpAxCAQFgCCGDY0OM4BCCAANIHIACBsAQQwLChx3EIQAABpA9AAAJhCSCAYUOP4xCAAAJIH4AABMISQADDhh7HITAaAreWdIKku+cs2lrSiV1aiQB2SZe6IVCPgH/gv5leOV/SRyTtI+m/9aqZzNPrSnq6pE8ssPhxko7rwisEsAuq1AmB+gReLOl9Ja89N4lh/VrH+8b9JZ1Ww7wvS3pCjecrPYoAVsLEQxDolMB9JJ2xoIUjJD2/Uyv6qfy6kr4u6cGSPALMlzMlmUdR+aukm7dpJgLYJk3qgkB9AjtJOqriawdLekXFZ8f22G0kXVhi1LskvVnSJenfbyvpPEnXKXj+L5LWa8s5BLAtktQDgfoEdpd0aO61D0h6kSSPlK4sqHIzST+t39Rgb9xA0h8k3aTAAi987CDpTyXW+ZP3SwX/5tHy5m14hAC2QZE6IFCPgEXh7wWv+BPXn7rZUrQAYnH8V70mB3n6HnPEek9J75b07wWWbSzp3JJnbiXp4iaeIYBN6PEuBOoT8GfdP3OvWQSeKumLBdVdq0AkjpW0ff2me33jM5KeVtDi6ZIeVMBgnnF3kfTLggeukHSjJqvkCGCvfYLGghO4mSTPYeXLFpJ+OIfNzpKOzP27Fwp+NEKe60v6Y4ld95XkRY5likd7FxW8eAtJf16mQr/TlgDaOKu91fiBknasaJAnPU+WdLykU9NvBf/GO0vS5RXr4DEITIGAR2xFIzwvDhT9YOd9KvoU9oqoV0bHUjyK/WyBMRdI2lTSpQ0N9TziByU9I9VzjKQnN6mzLQH0pGTZ0nUT+/LvvkfSW+asJrXZFnVBoA0CN5V0QFrYuHauQg8YiuYCi9q9q6Szc//wHUmPqPk52YZPRXW8StLbCwZVj0oDnDbbvZ6kO5V8Ftdqpy0BdGAcoL7L5yXtO9JPgb5Z0N64CPhnayYKecsOl+SNz4sWAPLv+Zf/3rm/PFqSP5GHKmULOp6z89G2uj726kdbAviAtJx9rzQS/I8kf8r6P+/p8RDf5/26LhbDAyX9o+uGqB8CcwhsKel7Bf/ufXAvLNnaURXopwqmmHyC5CVVK2jxOY/E8j9r/lT3dJgHJ6MvbQlgVUfvkIbI3sNj0fT/Wz/ekozxloIPN1khquoUz0EgEfD2FB/vuncBkd9K8raQyxrSKtsf6JMVpzSsu87rnn8sWnzwEbcf1KloyGf7FsBlfPUS+O0kbSDp0Uk0q843/k3S9SV9TdLn0h4rj04pEGibgOfivlFS6esl7d9ig2WryXXmFJuYU7bY4Z9RC/1kyhQEsApM++Hfup5wvbEkb7J0ILzyVFTeKekNNSagq9jAMzEJuL/NG9V1lcnEq5/5z0yvMj+pwzDcPg0mPJLNl7GtSFfCsCoCOM/Zh6f5SR87Kiqet/xJJVo8BIG1Cewi6eNzoFgovKWrq/KbtBqard9zgWVZZZrYUZatxvOaG5Uc22vSXi/vRhDALEiPEH3o2nsVV+I3WC+9hEbyBLZZsLXDG5Tv18MKqLOpFB2J20vSO1oKmxcxvY8vXyx8L01TSy011X810QRwRtgdxyNCZ6HIlu9LclJKNmH33xen0OJWkk5aYGjfJzT8M/x+Sbvl7HLKKc+ZL1u8veXXkrxRO1+crPWeLSzoLGtba+9FFcAswJenQ9nZv3vWgk+b1gJARaMm4BNOHsn5+Jr33z1xjrVfSNtTrhrII3/6HlbQtreq5M8ezzPRZ5X9lfTqkoc8v37QQD623iwCuAap9yt6jiPfgZyu+9OtU6fCsROwaHh+rWj0k7fdW63cd+qITFf+v0bSWwsq94KJj43NK96W5nyD3k5TVrwIUvQ53JU/ndeLAK6N2B3fHSibdNKpuH2UyRtbh/rt3nlHoIG1CPhsuuf55pVzJD1Wkv8/plImgs4h6BMoPk4668feU+hPZ//dvOI6fcxt5e4mQQCLw+4lfYuef7PPiid9vcPd5y8pq0vAMXYqp6Lic7s+977dyOe/yvbp1Y2a58j3qPvSlJ5HAOdHa0NJr80J4SfT+eOfTynQ2FqZQHaUc0NJzjk3xeJN0V4Ice69usVnmJ2pegpJV+v6ttbzCGA1fF7Z2y+3ydTnm3dNG0Or1cJTUyAwE8BvSXrYFAxeYKOndbyo5zRSZeUXae+g0/FXzU6zAmjaywe4EjAqOGEh9P4q7yfMlkfOOQZVoVoeGQmB7Dlbr/gW3UcxElOXMsP+ua8+U5IXNHwHsU+PjDGx6lIO1n2JEWBdYmue94FvHzzP5nfzVgmnBCvLhrtcS7zVJ4HssTb/mf2gfdIfoC0EsBn0ssudfTDeN15RpkUge3UjPxvTit1S1hLkpbD930tO61V0p4Mz2fyqnSaopQcCj5H01dQOPxs9AB+6CYLcbgSKtlBYAJ0Zd+VX1NpFOUhtb0xZgnwEbJNBLKDRXgkggN3gfqUkp9zKlo9JcpJWhLAb5m3UOlsBLrqft436qWNkBBDA7gJitj4m9ZxcEz57fEh3zVLzkgS8pcm/pCyC3v/HtQpLgpzSawhg99Eqy9bh6wF+333ztFCBgG8Y+7Ek75l7nqSjKrzDIytAAAHsL4hOzf9dSb4celb8mexd95RhCfi8tzM3f1vSQ4c1hdb7JIAA9kl7TVvOQP0VSXfMNO28bT62ROmfwEMknZyavbOkc/s3gRaHIoAADkV+za14p2aad/41Z9yg9EfAadBm99Z636b3b1ICEUAAhw/29uk4ki3xLXbPnsqdqsOja2xB9qJxT1Fc2bhGKpgUAQRwHOHytZ/OueYVYhdftGMhXLn8a+PAfbUVt5R0cbLnvel+ixGZhyl9EEAA+6BcvQ1n4z063fTlM8W+ND77mVy9Jp5cROASSeulh3ymm/uiFxFbwX9HAMcXVG/FsPA5Fb/j45Vizw/O5qrGZ/H0LPLdub7Dw+UpmT9PzxMsbkQAAWyEr9OXLYRnSrqbJN9W56s8GaU0R56/yJyfgeZMJ1sDwR936Jy/7bx0OY/PFDu5AqUZAW8+95yri3+5OBkoJSgBBHD8gfc1hbMbx94kaZ/xmzxaC33r2cuSdWx6Hm2Y+jMMAeyPdZOWtkifwa7D+9V8GxlnVesRdVr4j2Ze8R5AVtnrMVy5pxHA6YTUZ1SPSOZeKmkHSSeO5D7asVPcLJ31ndnp1V9n8KYEJ4AATqsD7CzpyJzJ23Ix09wgPl7SsZknNpV09rTCjrVdEUAAuyLbXb2ewHfaJl9uky2eH/RRusu6a3pyNXs7UfZiI48EfUE4BQJXE0AAp9kRvDrsm72cbzBffJrEd7pGn9/aStJJGTi+49kr6hQIXEMAAZx+Z/BcoDdN54s/lZ3ZONpiiVfNfcZ3rwwQj5ovnH6o8aBtAghg20SHq2/3NPLLW7CvpLdJumI403pr2eJ3mKTdUotnpStMQ1323RvtFWgIAVyBIGZc8CmHPSTtV+CWc9750qaLVsvla7xxVmfn8pvd1XyApL1X1FfcaokAAtgSyBFWc1ASw7xpP5O0i6QzRmjzsiblpwG41GhZksHeQwBXO+AeDTmZwuz0Q97b0yS9TtLxE8XgEa/v8tgoY7+vHPAZagoEFhJAABciWpkHPCo6fIE3/nz2jXVjzzxjwbOwO5PLrDi7y46SrlqZiOFI5wQQwM4Rj64Bi8eHJG0zxzInDPDmYecmdLKA3w3kxQapXScteEESPG8Byhc2gw8UoKk3iwBOPYLN7Pcn5NZp5OR5wdkCQrZWJ2Lw5mpvp/HFTb7Z7pQ0SvSJiqYXvXvldktJm0uyPV7McLZmC/T6c9w7R9Keko5phoC3IxNAACNHv9j3dSU5+YIvbfJmYouSr4xcVLzp2KcsLJTnpz/7U9pJB3zbmk9hbFyxLm/ZuTzV41XrCySdno78eWsLBQKtEPgfx2qSpgHNMmIAAAAASUVORK5CYII=">';
+        if (empty($id)) {
+
+            show_404();
+            return false;
+        }
+
+        $record = $this->boundbook->getRecordById($id);
+
+        if (empty($record)) {
+            show_404();
+            return false;
+        }
+
+        $data['record'] = $record;
+        $data['id'] = $id;
+        $data['page'] = 'pages/sectionB';
+        $data['sectionTitle'] = 'Section B - Must be Completed Personally by the Buyer';
+
+        $this->load->view('layouts/app', $data);
     }
 
+    public function ax_save_sectionB()
+    {
+
+        if ($this->input->method() != 'post' || !$this->input->is_ajax_request()) {
+            show_404();
+            return false;
+        }
+
+        $record = $this->boundbook->getRecordById($this->input->post('record_id'));
+
+        $data['errors'] = [];
+
+        if (empty($record)) {
+            $data['errors'][] = 'Record not found.';
+            echo json_encode($data);
+            return false;
+        }
+
+        $url = FCPATH . '/public/images/' . $this->input->post('record_id');
+
+        $update_data = [
+            'handgun_options' => $this->input->post('handgun_options'),
+            'long_gun_options' => $this->input->post('long_gun_options'),
+            'other_firearm' => $this->input->post('other_firearm'),
+            'name_of_functions' => $this->input->post('name_of_functions'),
+            'function_state' => $this->input->post('function_state'),
+            'function_city' => $this->input->post('function_city'),
+            'issuing_authority' => $this->input->post('issuing_authority'),
+            'type_of_identification' => $this->input->post('type_of_identification'),
+            'number_identification' => $this->input->post('number_identification'),
+            'identification_exp_date' => $this->input->post('identification_exp_date'),
+            'government_issued_documentation' => $this->input->post('government_issued_documentation'),
+            'exception_documentation' => $this->input->post('exception_documentation'),
+            'transaction_number' => $this->input->post('transaction_number'),
+            'd19_nics_options' => $this->input->post('d19_nics_options'),
+            'e19_nics_options' => $this->input->post('e19_nics_options'),
+            'f19_name' => $this->input->post('f19_name'),
+            'f19_number' => $this->input->post('f19_number'),
+            'issuance_date' => $this->input->post('issuance_date'),
+            'date_19a' => $this->input->post('date_19a'),
+            'expiration_date' => $this->input->post('expiration_date'),
+            'transferred_date' => $this->input->post('transferred_date'),
+            'g19_name' => $this->input->post('g19_name'),
+            'd19_nics_date' => $this->input->post('d19_nics_date'),
+            'e19_nics_date' => $this->input->post('e19_nics_date'),
+            'nifs_20' => $this->input->post('nifs_20'),
+            'nifc_21' => $this->input->post('nifc_21'),
+            'state_permit_dade' => $this->input->post('state_permit_dade'),
+            'permit_number' => $this->input->post('permit_number'),
+            'transferror_seller_title' => $this->input->post('transferror_seller_title'),
+            'c19_nics_options' => $this->input->post('c19_nics_options'),
+            'state_transaction' => $this->input->post('state_transaction'),
+            'transferror_seller_fname' => $this->input->post('transferror_seller_fname'),
+        ];
+
+
+        if (!is_dir($url)) {
+            mkdir($url, 0775, TRUE);
+        }
+
+        if ($this->input->post('signature') != '') {
+
+            $signature = str_replace('[removed]', '', $this->input->post('signature'));
+            $signature = base64_decode($signature);
+
+            $signature_name = random_string('alnum', 16) . '.png';
+
+            file_put_contents($url . '/' . $signature_name, $signature);
+
+            $update_data['secB_signature'] = $signature_name;
+
+            if(!empty($record['secB_signature']) && file_exists($url.'/'.$record['secB_signature'])){
+
+                unlink($url.'/'.$record['secB_signature']);
+            }
+        }
+
+        $config['upload_path'] = $url;
+        $config['allowed_types'] = 'jpg|jpeg|png';
+        $config['max_size'] = 4096;
+        $config['file_name'] = random_string('numeric', 10).'.png';
+        $this->load->library('upload');
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('identification_photo_id') == true) {
+
+            $update_data['identification_photo_id'] = $config['file_name'];
+
+            if(file_exists($url.'/'.$record['identification_photo_id'])){
+
+                unlink($url.'/'.$record['identification_photo_id']);
+            }
+        }
+
+        $config['file_name'] = random_string('numeric', 10).'.png';
+
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('government_photo') == true) {
+
+            $update_data['government_photo'] = $config['file_name'];
+
+            if(file_exists($url.'/'.$record['government_photo'])){
+
+                unlink($url.'/'.$record['government_photo']);
+            }
+
+        }
+
+        $config['file_name'] = random_string('numeric', 10).'.png';
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('exception_photo') == true) {
+
+            if(file_exists($url.'/'.$record['exception_photo'])){
+
+                unlink($url.'/'.$record['exception_photo']);
+            }
+
+            $update_data['exception_photo'] = $config['file_name'];
+
+        }
+
+        $result = $this->boundbook->update_boundook($this->input->post('record_id'), $update_data);
+
+        echo json_encode($data);
+    }
+
+    public function fill_sectionD($id){
+
+        if (empty($id)) {
+
+            show_404();
+            return false;
+        }
+
+        $record = $this->boundbook->getRecordById($id);
+
+        if (empty($record)) {
+            show_404();
+            return false;
+        }
+
+        $data['firearms'] = $this->SecD_firearms->get_firearms_data(['boundbook_id'=>$id]);
+        $data['record'] = $record;
+
+        $data['id'] = $id;
+        $data['page'] = 'pages/sectionD';
+        $data['sectionTitle'] = 'Section B - Must be Completed Personally by the Buyer';
+
+        $this->load->view('layouts/app', $data);
+    }
+
+    public function ax_save_sectionD(){
+
+        if ($this->input->method() != 'post' || !$this->input->is_ajax_request()) {
+            show_404();
+            return false;
+        }
+
+        $rec_id = $this->input->post('record_id');
+
+        $record = $this->boundbook->getRecordById($rec_id);
+
+        $data['errors'] = [];
+
+        if (empty($record)) {
+            $data['errors'][] = 'Record not found.';
+            echo json_encode($data);
+            return false;
+        }
+
+        $url = FCPATH . '/public/images/' . $rec_id;
+
+
+
+        $boundock_update_data = [
+            'sec_d_one'            => $this->input->post('sec_d_one'),
+            'sec_d_30_1'           => $this->input->post('sec_d_30_1'),
+            'sec_d_30_2'           => $this->input->post('sec_d_30_2'),
+            'sec_d_32'             => $this->input->post('sec_d_32'),
+            'sec_d_31'             => $this->input->post('sec_d_31'),
+            'sec_d_33'             => $this->input->post('sec_d_33'),
+            'sec_d_transfer_fname' => $this->input->post('sec_d_transfer_fname'),
+            'sec_d_transfer_title' => $this->input->post('sec_d_transfer_title'),
+            'sec_d_transfer_date'  => $this->input->post('sec_d_transfer_date'),
+        ];
+
+        if ($this->input->post('signature') != '') {
+
+            $signature = str_replace('[removed]', '', $this->input->post('signature'));
+            $signature = base64_decode($signature);
+
+            $signature_name = random_string('alnum', 16) . '.png';
+
+            file_put_contents($url . '/' . $signature_name, $signature);
+
+            $boundock_update_data['sec_d_signature'] = $signature_name;
+
+            if(!empty($record['sec_d_signature']) && file_exists($url.'/'.$record['sec_d_signature'])){
+
+                unlink($url.'/'.$record['sec_d_signature']);
+            }
+        }
+
+        $insert_update_data = [];
+
+        $secD_firearms = $this->SecD_firearms->get_firearms_data(['boundbook_id'=>$rec_id]);
+
+        foreach ($this->input->post('manufacturer_importer') as $index => $value){
+
+            $insert_update_data[] = [
+                'boundbook_id'          => $rec_id,
+                'manufacturer_importer' => (!empty($this->input->post('manufacturer_importer')[$index]))?$this->input->post('manufacturer_importer')[$index]:'',
+                'model'                 => (!empty($this->input->post('model')[$index]))?$this->input->post('model')[$index]:'',
+                'serial_number'         => (!empty($this->input->post('serial_number')[$index]))?$this->input->post('serial_number')[$index]:'',
+                'type'                  => (!empty($this->input->post('type')[$index]))?$this->input->post('type')[$index]:'',
+                'caliber_gauge'         => (!empty($this->input->post('caliber_gauge')[$index]))?$this->input->post('caliber_gauge')[$index]:'',
+            ];
+        }
+
+        if(!empty($secD_firearms)){
+
+            $this->SecD_firearms->delete_data($rec_id);
+        }
+
+        $this->SecD_firearms->insert_data($insert_update_data);
+
+        $this->boundbook->update_boundook($rec_id, $boundock_update_data);
+
+        echo json_encode(true);
+    }
 }

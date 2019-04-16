@@ -63,3 +63,9 @@
     overflow-y: auto;
     height: 300px;
 }
+
+
+
+.over_hidden{
+    overflow: hidden;
+}
