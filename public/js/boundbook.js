@@ -256,6 +256,10 @@ if (action == 'fill_sectionB') {
         console.log(1);
     }
 
+    $(document).on('click','.load_file',function () {
+
+        $(this).parent('.snap-id').find('.over_hidden').trigger('click');
+    });
 }
 
 if (action == 'fill_sectionD') {

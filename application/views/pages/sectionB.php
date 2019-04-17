@@ -124,7 +124,7 @@
                                                aria-describedby="" name="type_of_identification" placeholder="Type of Identification" value="<?php echo (!empty($record['type_of_identification']))?$record['type_of_identification']:'';?>">
                                     </div>
                                     <div class="col-md-5 snap-id">
-                                        <button type="button" class="btn btn-lg btn-outline-secondary btn-block"><i
+                                        <button type="button" class="btn btn-lg btn-outline-secondary btn-block load_file"><i
                                                     class="fas fa-camera fa-lg"></i><br>
                                             <small>Take a Photo of ID</small>
                                         </button>
@@ -156,7 +156,7 @@
                                        value="<?php echo (!empty($record['government_issued_documentation']))?$record['government_issued_documentation']:'';?>">
                             </div>
                             <div class="col-md-5 snap-id">
-                                <button type="button" class="btn btn-outline-secondary btn-block"><i
+                                <button type="button" class="btn btn-outline-secondary btn-block load_file"><i
                                             class="fas fa-camera fa-lg"></i> Take a Photo
                                 </button>
                                 <input type="file" name="government_photo" id="government_photo" class="over_hidden"
@@ -177,7 +177,7 @@
                                        value="<?php echo (!empty($record['exception_documentation']))?$record['exception_documentation']:'';?>">
                             </div>
                             <div class="col-md-5 snap-id">
-                                <button type="button" class="btn btn-outline-secondary btn-block"><i
+                                <button type="button" class="btn btn-outline-secondary btn-block load_file"><i
                                             class="fas fa-camera fa-lg"></i> Take a Photo
                                 </button>
                                 <input type="file" name="exception_photo" id="exception_photo" class="over_hidden">
