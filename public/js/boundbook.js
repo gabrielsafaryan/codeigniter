@@ -253,7 +253,8 @@ if (action == 'fill_sectionB') {
     });
 
     function save_sectionB_handler(data) {
-        console.log(1);
+
+        alert('Your information successfully saved.');
     }
 
     $(document).on('click','.load_file',function () {
@@ -294,7 +295,7 @@ if (action == 'fill_sectionD') {
     });
 
     function save_sectionB_handler(data) {
-        console.log(1);
+        alert('Your information successfully saved.');
     }
 }
 

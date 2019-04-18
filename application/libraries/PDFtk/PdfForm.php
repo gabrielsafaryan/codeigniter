@@ -151,10 +151,22 @@ class PdfForm
         $this->CI->fpdf->AddPage();
         $image_name = $this->data['signature'];
 
-        $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$image_name}",50,47,12,12,NULL,$path);
-        $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$this->data['secB_signature']}",50,268,12,12,NULL,$path);
+       if(!empty($image_name)){
+
+           $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$image_name}",50,47,12,12,NULL,$path);
+       }
+
+       if(!empty($this->data['secB_signature'])){
+
+           $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$this->data['secB_signature']}",50,268,12,12,NULL,$path);
+       }
+
         $this->CI->fpdf->AddPage();
-        $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$this->data['secD_signature']}",80,151,15,15,NULL,$path);
+
+       if(!empty($this->data['secD_signature'])){
+           $this->CI->fpdf->Image(FCPATH."public/images/{$this->data['id']}/{$this->data['secD_signature']}",80,151,15,15,NULL,$path);
+       }
+
         $this->CI->fpdf->AddPage();
         $this->CI->fpdf->AddPage();
         $this->CI->fpdf->AddPage();
