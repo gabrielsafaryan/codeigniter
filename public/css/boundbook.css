@@ -64,8 +64,56 @@
     height: 300px;
 }
 
-
+.signature_text{
+    padding: 20px 27px;
+}
 
 .over_hidden{
     visibility: hidden;
+}
+
+.right-class{
+    float: right;
+}
+
+.secA_lnk,.secA_lnk:hover{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.searchBox {
+    display: flex;
+    float: right;
+}
+
+select#search_type {
+    margin-right: 12px;
+}
+
+input#search_val {
+    margin-left: 12px;
+}
+
+span.error_class {
+    color: red;
+}
+
+.error_img{
+    margin-right: 15px;
+    padding:7px;
+    background: url('../img/error-triangle.png') center no-repeat;
+}
+
+.show_error,.show_error1 {
+    margin: 0 auto;
+    width: 61%;
+}
+
+.error_red_class{
+    outline:1px solid red;
+    color: red;
+}
+
+.sectionB_card {
+    min-height: 620px;
 }

@@ -11,6 +11,7 @@ class BoundbookController extends CI_Controller
     {
         parent::__construct();
         $this->load->model('BoundbookModel', 'boundbook');
+        $this->load->model('State_model');
         $this->load->model('SecD_firearms_model', 'SecD_firearms');
         $this->load->helper('string');
     }
@@ -19,7 +20,33 @@ class BoundbookController extends CI_Controller
     public function index()
     {
 
-        $this->load->view('layouts/app', array('page' => 'pages/buyerForm', 'sectionTitle' => 'Section A - Must be Completed Personally by the Buyer'));
+
+    }
+
+    public function fill_sectionA($id=NULL){
+
+        if(empty($id)){
+
+            $data['states'] = $this->State_model->get_all_state();
+            $data['page'] = 'pages/buyerForm';
+            $data['sectionTitle'] =  'Section A - Must be Completed Personally by the Buyer';
+            $this->load->view('layouts/app', $data);
+            return false;
+        }
+
+        $data['record'] = $this->boundbook->getRecordById($id);
+
+        if(empty($data['record'])){
+            show_404();
+            return false;
+        }
+
+        $data['states'] = $this->State_model->get_all_state();
+
+        $data['page'] = 'pages/buyerForm';
+        $data['sectionTitle'] =  'Section A - Must be Completed Personally by the Buyer';
+        $this->load->view('layouts/app', $data);
+
     }
 
     /**
@@ -41,14 +68,27 @@ class BoundbookController extends CI_Controller
         $this->load->helper('measure');
         $image_name = '';
 
-        if ($this->input->post('signature') != '') {
+        $data['errors'] = [];
 
-            $signature = str_replace('[removed]', '', $this->input->post('signature'));
-            $signature = base64_decode($signature);
+        $record = '';
 
-            $image_name = random_string('alnum', 16) . '.png';
+        if(!empty($formData['id'])){
 
+            $record = $this->boundbook->getRecordById($formData['id']);
         }
+
+        if ($this->input->post('signature') == '' && empty($record['signature_14'])) {
+
+            $data['errors'][] = 'Signature field is required.';
+            echo json_encode($data);
+            return false;
+        }
+
+        $signature = str_replace('[removed]', '', $this->input->post('signature'));
+        $signature = base64_decode($signature);
+
+        $image_name = random_string('alnum', 16) . '.png';
+
 
         $data = array(
             'first_name_1' => $formData['fName'],
@@ -69,7 +109,7 @@ class BoundbookController extends CI_Controller
             'home_state_2' => $formData['homeState'],
             'home_zip_2' => $formData['homeZip'],
             'home_county_2' => $formData['residencyState'],
-            'us_citizen_12a' => $formData['residencyCountry'],
+            'us_citizen_12a' => (!empty($formData['residencyCountry']))?$formData['residencyCountry']:0,
             'other_country_citizen_12a' => $formData['otherCountryCitizen'],
             'ethnicity_hispanic_or_latino_10a' => $formData['ethnicity'] === 1 ? 1 : 0,
             'ethnicity_not_hispanic_or_latino_10a' => $formData['ethnicity'] === 1 ? 1 : 0,
@@ -99,10 +139,20 @@ class BoundbookController extends CI_Controller
             'signature_14' => $image_name,
         );
 
-        $return_id = $this->boundbook->saveFromData($data);
-        if (!$return_id) {
-            return $this->output->set_status_header(500)->set_content_type('application/json')->set_output(array('error' => 'An error has occurred, please try again!'));
+
+        if(empty($formData['id'])){
+
+            $return_id = $this->boundbook->saveFromData($data);
+
+            if (!$return_id) {
+                return $this->output->set_status_header(500)->set_content_type('application/json')->set_output(array('error' => 'An error has occurred, please try again!'));
+            }
+        }else{
+            $this->boundbook->update_boundook($formData['id'], $data);
+            $return_id = $formData['id'];
         }
+
+
 
         if ($image_name != '') {
 
@@ -378,6 +428,8 @@ class BoundbookController extends CI_Controller
             return false;
         }
 
+        $data['states'] = $this->State_model->get_all_state();
+
         $data['record'] = $record;
         $data['id'] = $id;
         $data['page'] = 'pages/sectionB';
@@ -531,7 +583,7 @@ class BoundbookController extends CI_Controller
 
         $data['firearms'] = $this->SecD_firearms->get_firearms_data(['boundbook_id'=>$id]);
         $data['record'] = $record;
-
+        $data['states'] = $this->State_model->get_all_state();
         $data['id'] = $id;
         $data['page'] = 'pages/sectionD';
         $data['sectionTitle'] = 'Section B - Must be Completed Personally by the Buyer';
@@ -558,9 +610,14 @@ class BoundbookController extends CI_Controller
             return false;
         }
 
+        if ($this->input->post('signature') == '' && empty($record['sec_d_signature'])) {
+
+            $data['errors'][] = 'Signature field is required.';
+            echo json_encode($data);
+            return false;
+        }
+
         $url = FCPATH . '/public/images/' . $rec_id;
-
-
 
         $boundock_update_data = [
             'sec_d_one'            => $this->input->post('sec_d_one'),
@@ -574,21 +631,18 @@ class BoundbookController extends CI_Controller
             'sec_d_transfer_date'  => $this->input->post('sec_d_transfer_date'),
         ];
 
-        if ($this->input->post('signature') != '') {
+        $signature = str_replace('[removed]', '', $this->input->post('signature'));
+        $signature = base64_decode($signature);
 
-            $signature = str_replace('[removed]', '', $this->input->post('signature'));
-            $signature = base64_decode($signature);
+        $signature_name = random_string('alnum', 16) . '.png';
 
-            $signature_name = random_string('alnum', 16) . '.png';
+        file_put_contents($url . '/' . $signature_name, $signature);
 
-            file_put_contents($url . '/' . $signature_name, $signature);
+        $boundock_update_data['sec_d_signature'] = $signature_name;
 
-            $boundock_update_data['sec_d_signature'] = $signature_name;
+        if(!empty($record['sec_d_signature']) && file_exists($url.'/'.$record['sec_d_signature'])){
 
-            if(!empty($record['sec_d_signature']) && file_exists($url.'/'.$record['sec_d_signature'])){
-
-                unlink($url.'/'.$record['sec_d_signature']);
-            }
+            unlink($url.'/'.$record['sec_d_signature']);
         }
 
         $insert_update_data = [];
@@ -616,6 +670,6 @@ class BoundbookController extends CI_Controller
 
         $this->boundbook->update_boundook($rec_id, $boundock_update_data);
 
-        echo json_encode(true);
+        echo json_encode($data);
     }
 }

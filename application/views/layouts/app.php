@@ -28,7 +28,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!--Header-->
 <header>
-    <?php $this->load->view('partials/formHeader') ?>
+    <?php /*$this->load->view('partials/formHeader') */?>
 </header>
 <div class="container">
     <?php $this->load->view($page); ?>

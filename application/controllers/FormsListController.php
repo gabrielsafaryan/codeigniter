@@ -14,23 +14,24 @@ class FormsListController extends CI_Controller
 
     public function getList()
     {
-        $start = $this->input->post('start') ? $this->input->post('start') : 0;
-        $limit = $this->input->post('length') ? $this->input->post('length') : 10;
-        $searchArr = $this->input->post('search');
-        $value = $searchArr['value'];
-        $orderArr = $this->input->post('order');
-        $order = $orderArr[0];
+        $start       = $this->input->post('start') ? $this->input->post('start') : 0;
+        $limit       = $this->input->post('length') ? $this->input->post('length') : 10;
+        $searchArr   = $this->input->post('search');
+        $value       = $this->input->post('searching_val');
+        $type       = $this->input->post('type');
+        $orderArr    = $this->input->post('order');
+        $order       = $orderArr[0];
 
-        $query = $query = $this->db->select('id', 'first_name_1', 'last_name_1', 'date_filled_14');
+        $query =  $this->db->select('id', 'first_name_1', 'last_name_1', 'date_filled_14');
         $totalRecords = $query->count_all_results('boundbook_4473');
 
         if (!empty($value)) {
-            $query->like('first_name_1', $value)
-                ->or_like('last_name_1', $value);
+
+            $query->like($type,$value);
         }
 
-        $recordsFiltered = $query->count_all_results('boundbook_4473');
 
+        $recordsFiltered = $query->count_all_results('boundbook_4473');
         switch ($order['column']) {
             case 0:
                 $i = 'id';
@@ -45,6 +46,12 @@ class FormsListController extends CI_Controller
         if ($limit > 0) {
             $query = $query->offset($start)->limit($limit);
         }
+
+        if (!empty($value)) {
+
+            $query->like($type,$value);
+        }
+
 
         $filteredData = $query->order_by($i, $order['dir'])->get('boundbook_4473')->result_array();
 

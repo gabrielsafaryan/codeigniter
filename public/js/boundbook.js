@@ -1,3 +1,76 @@
+$(document).on('keypress', '.not_string', function (key) {
+    if (key.charCode > 65 || key.charCode > 90) {
+
+        return false;
+    }
+
+});
+
+/*$(document).on('change', '.not_string', function (key) {
+
+    if (!$.isNumeric($(this).val())) {
+
+        $(this).val('');
+    }
+});*/
+
+$('.socialSecNumber').on('keypress', function () {
+
+    var val = $(this).val();
+
+    if (val.length > 10) {
+        return false;
+    }
+});
+
+$('.socialSecNumber').on('keyup change', function () {
+
+    var val = $(this).val();
+    if (val.length == 3 || val.length == 6) {
+
+        $(this).prop('value', val + '-');
+    }
+
+    if (val.length > 11) {
+        return false;
+    }
+});
+
+$('.phoneNumber').on('keyup change', function () {
+
+    var val = $(this).val();
+
+    if(val.length == 1){
+
+        $(this).prop('value', '(' + val);
+    }
+
+    if(val.length == 4){
+
+        $(this).prop('value',  val + ')');
+    }
+
+    if(val.length == 5){
+
+        $(this).prop('value',  val + ' ');
+    }
+
+    if (val.length == 9) {
+
+        $(this).prop('value', val + '-');
+    }
+
+});
+
+$('.phoneNumber').on('keypress', function () {
+
+    var val = $(this).val();
+
+    if (val.length > 13) {
+        return false;
+    }
+});
+
 $(document).ready(function () {
 
     $('#datepicker').datepicker({
@@ -33,6 +106,58 @@ $(document).ready(function () {
     });
 
     $('#submit').click(function (e) {
+
+        $('#buyerForm *').removeClass('error_red_class');
+
+        $('.show_error1').html('');
+
+        var fields = {
+            options: {selector: '.show_error', modal_show: '#error_modal', single: false, form_id: '#buyerForm'},
+            fName: {errorname: 'First Name', required: true},
+            lName: {errorname: 'Last Name', required: true},
+            datepicker: {errorname: 'Date & Place of Birth', required: true},
+            birthState: {errorname: 'State', required: true},
+            birthCity: {errorname: 'City', required: true},
+            weight: {errorname: 'Weight', required: true},
+            homeAddress1: {errorname: 'Address 1', required: true},
+            homeZip: {errorname: 'Zip Code', required: true},
+            homeState: {errorname: 'State', required: true},
+            homeCity: {errorname: 'City', required: true},
+            residencyState: {errorname: 'Residency State', required: true},
+            email: {errorname: 'Email', emailvalid: true},
+        };
+
+
+
+        var validation = new validation_lib(fields);
+
+        if (!validation.validate_field()) {
+
+            $('html,body').animate({
+                    scrollTop: $('#buyerForm').offset().top
+                },
+                'slow');
+
+            return false;
+        }
+
+        var socialSecNumber = $('.socialSecNumber').val();
+
+         socialSecNumber = socialSecNumber.replace(/-/gi, "");
+
+        $('.socialSecNumber').prop('value',socialSecNumber);
+
+        var phoneNumberVal = $('.phoneNumber').val();
+
+        phoneNumberVal = phoneNumberVal.replace(/-/gi, "");
+
+        phoneNumberVal = phoneNumberVal.replace(")", "");
+
+        phoneNumberVal = phoneNumberVal.replace("(", "");
+        phoneNumberVal = phoneNumberVal.replace(" ", "");
+
+        $('.phoneNumber').prop('value',phoneNumberVal);
+
         e.preventDefault();
         let signature = '';
 
@@ -47,12 +172,22 @@ $(document).ready(function () {
 
         $.post(base_url + 'save-boundbook-form', data)
             .done(function (response) {
+
+                var obj = JSON.parse(response);
+
+                if(obj['errors'].length>0){
+
+                    $('#responseModalLabel').html('Error');
+                    $('.modal-body').html('<div><span class="error_img"></span> <span class="error_class">' + obj['errors'][0] + '</span></div>');
+                }
+
                 if (response.status === 'success') {
                     $('#responseModalLabel').html(response.status);
                     $('.modal-body').html(response.message);
                 }
             })
             .fail(function (error) {
+
                 $('#responseModalLabel').html('Error');
                 $('.modal-body').html(error.responseJSON);
             })
@@ -71,6 +206,7 @@ $(document).ready(function () {
         processing: true,
         serverSide: true,
         fixedHeader: true,
+        searching: false,
         responsive: true,
         searchDelay: 9000,
         columns: [
@@ -91,6 +227,15 @@ $(document).ready(function () {
                 title: "Date",
                 render: function (data) {
                     return new Date(data).toDateString();
+                }
+            },
+            {
+                title: "Section A",
+                orderable: false,
+                render: function (data, type, row) {
+                    return `<a class="pdf-download" href="${base_url}fill_sectionA/${row.id}"> 
+                              <button class="btn btn-success pdf-download">Section A</button>
+                            </a>`;
                 }
             },
             {
@@ -123,6 +268,15 @@ $(document).ready(function () {
         ],
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'All']]
     });
+
+    function data_table() {
+
+        var settings = $("#forms-list").dataTable().fnSettings();
+
+        settings.ajax.data = {'type': $('#search_crt').val(), 'searching_val': $('#search_val').val()};
+
+        formsListDtb.ajax.url(base_url + 'list/get').load();
+    }
 
     formsListDtb.on('click', 'tbody tr', function (e) {
         if (e.target.closest('.pdf-download') !== null) {
@@ -160,6 +314,33 @@ $(document).ready(function () {
             });
     });
 
+
+    $(document).on('keyup', '#search_val', function () {
+
+        data_table();
+    });
+
+    $(document).on('change', '#search_val', function () {
+
+        data_table();
+    });
+
+    /*    $(document).on('change','#search_crt',function () {
+
+            if($(this).val() == 'birth_date_7'){
+
+                $('#search_val').datepicker({
+                    uiLibrary: 'bootstrap4',
+                    format:'yyyy-mm-dd',
+                    autoclose:true,
+                });
+
+            }else{
+                $('#search_val').datepicker('destroy');
+                $('#search_val').val('');
+            }
+        })*/
+
 });
 
 console.log(action);
@@ -167,31 +348,31 @@ console.log(action);
 if (action == 'fill_sectionB') {
     $('#datepicker').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker2').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker3').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker4').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker5').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker6').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $('#datepicker7').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $(document).ready(function ($) {
 
@@ -203,6 +384,46 @@ if (action == 'fill_sectionB') {
         });
 
         $(document).on('click', '#save_section_b', function () {
+
+            /* $('#buyerForm *').removeClass('error_red_class');
+
+             var fields = {
+                 options: {selector: '.show_error', modal_show:'#error_modal', single: false, form_id: '#save_sectionB_form'},
+                 name_of_functions: {errorname: 'Name of Function', required: true},
+                 function_state: {errorname: 'State', required: true},
+                 birthCity: {errorname: 'City', required: true},
+                 issuing_authority: {errorname: 'Issuing Authority', required: true},
+                 type_of_identification: {errorname: 'Type of Identification', required: true},
+                 number_identification: {errorname: 'Number of Identification', required: true},
+                 identification_exp_date: {errorname: 'Expiration Date', required: true},
+                 government_issued_documentation: {errorname: 'Government Issued Documentation', required: true},
+                 exception_documentation: {errorname: 'Exception Documentation', required: true},
+                 date_19a: {errorname: 'Date', required: true},
+                 transaction_number: {errorname: 'State transaction number', required: true},
+                 state_transaction: {errorname: 'State transaction', required: true},
+                 d19_nics_date: {errorname: 'Date', required: true},
+                 e19_nics_date: {errorname: 'Date', required: true},
+                 f19_name: {errorname: 'Name', required: true},
+                 f19_number: {errorname: 'Number', required: true},
+                 g19_name: {errorname: 'Name', required: true},
+                 state_permit_dade: {errorname: 'Issuing State and Permit Type', required: true},
+                 issuance_date: {errorname: 'Issuance Date', required: true},
+                 expiration_date: {errorname: 'Expiration Date', required: true},
+                 permit_number: {errorname: 'Permit Number', required: true},
+             };
+
+             var validation = new validation_lib(fields);
+
+             if (!validation.validate_field()) {
+
+                 $('html,body').animate({
+                         scrollTop: $('#save_sectionB_form').offset().top
+                     },
+                     'slow');
+
+                 return false;
+             }
+ */
 
             var data = $('#save_sectionB_form').serializeArray();
             var url = base_url + 'boundbookController/ax_save_sectionB';
@@ -221,22 +442,22 @@ if (action == 'fill_sectionB') {
             var inp_val2 = input2[0].files[0];
             var inp_val3 = input3[0].files[0];
 
-            if(typeof input1[0].files[0] == 'undefined'){
+            if (typeof input1[0].files[0] == 'undefined') {
 
-                 inp_val1 = '';
+                inp_val1 = '';
             }
 
-            if(typeof input2[0].files[0] == 'undefined'){
+            if (typeof input2[0].files[0] == 'undefined') {
 
                 inp_val2 = '';
             }
 
-            if(typeof input3[0].files[0] == 'undefined'){
+            if (typeof input3[0].files[0] == 'undefined') {
 
                 inp_val3 = '';
             }
 
-            file_data.append('identification_photo_id',inp_val1);
+            file_data.append('identification_photo_id', inp_val1);
             file_data.append('government_photo', inp_val2);
             file_data.append('exception_photo', inp_val3);
 
@@ -254,10 +475,15 @@ if (action == 'fill_sectionB') {
 
     function save_sectionB_handler(data) {
 
-        alert('Your information successfully saved.');
+        $('.modal-body').html('');
+        $('#responseModalLabel').html('');
+
+        $('#responseModal').modal('show');
+        $('#responseModalLabel').html('Success');
+        $('.modal-body').html('Your information successfully saved.');
     }
 
-    $(document).on('click','.load_file',function () {
+    $(document).on('click', '.load_file', function () {
 
         $(this).parent('.snap-id').find('.over_hidden').trigger('click');
     });
@@ -267,7 +493,7 @@ if (action == 'fill_sectionD') {
 
     $('#datepicker7').datepicker({
         uiLibrary: 'bootstrap4',
-        format:'yyyy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     $(document).ready(function ($) {
 
@@ -279,6 +505,44 @@ if (action == 'fill_sectionD') {
         });
 
         $(document).on('click', '#save_sec_d', function () {
+
+            $('#sec_d_form *').removeClass('error_red_class');
+
+            var arr = $('.secB_valid_field');
+
+            var error_log = true;
+
+            $.each(arr, function (index, value) {
+
+                if ($(value).val() == '') {
+                    error_log = false;
+                    $(this).addClass('error_red_class');
+                    $('.show_error1').append('<div><span class="error_img"></span> <span class="error_class">' + $(value).attr('placeholder') + ' field is required.</span></div>');
+                }
+            });
+
+            var fields = {
+                options: {selector: '.show_error', modal_show: '#error_modal', single: false, form_id: '#sec_d_form'},
+                sec_d_one: {errorname: 'One', required: true},
+                sec_d_transfer_fname: {errorname: 'Full Name', required: true},
+                sec_d_transfer_title: {errorname: 'Title', required: true}
+            };
+
+                var validation = new validation_lib(fields);
+
+            if (!error_log) {
+                $('#error_modal').modal('show');
+            }
+
+            if (!validation.validate_field() || !error_log) {
+
+                $('html,body').animate({
+                        scrollTop: $('#sec_d_form').offset().top
+                    },
+                    'slow');
+
+                return false;
+            }
 
             var data = $('#sec_d_form').serializeArray();
             var url = base_url + 'boundbookController/ax_save_sectionD';
@@ -295,7 +559,23 @@ if (action == 'fill_sectionD') {
     });
 
     function save_sectionB_handler(data) {
-        alert('Your information successfully saved.');
+
+        var obj = JSON.parse(data);
+
+        $('.modal-body').html('');
+        $('#responseModalLabel').html('');
+
+        if(obj['errors'].length>0){
+
+            $('#responseModal').modal('show');
+            $('#responseModalLabel').html('Error');
+            $('.modal-body').html('<div><span class="error_img"></span> <span class="error_class">' + obj['errors'][0] + '</span></div>');
+
+        }else{
+            $('#responseModal').modal('show');
+            $('#responseModalLabel').html('Success');
+            $('.modal-body').html('Your information successfully saved.');
+        }
     }
 }
 

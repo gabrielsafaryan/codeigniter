@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'BoundbookController';
+$route['default_controller'] = 'FormsListController';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['save-boundbook-form']['post'] = 'BoundbookController/saveForm';
@@ -57,6 +57,8 @@ $route['/'] = 'BoundbookController';
 $route['forms-list'] = 'FormsListController';
 $route['fill_sectionB/(:any)'] = 'BoundbookController/fill_sectionB/$1';
 $route['fill_sectionD/(:any)'] = 'BoundbookController/fill_sectionD/$1';
+$route['fill_sectionA/(:any)'] = 'BoundbookController/fill_sectionA/$1';
+$route['fill_sectionA'] = 'BoundbookController/fill_sectionA';
 $route['list/get']['post'] = 'FormsListController/getList';
 $route['record/get']['post'] = 'FormsListController/getFilteredRecord';
 $route['pdf/download']['get'] = 'FormsListController/pdfDownload';

@@ -36,21 +36,21 @@
                             <div class="col-sm-2"> <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
                                                          title=" (If Designated) (If the manufacturer and importer are different, the FFL must include both.)"
                                                          style="width:100%">
-              <input type="text" class="form-control multi-in-one" name="model[]" id="fName" aria-describedby=""
+              <input type="text" class="form-control multi-in-one f_model_25 secB_valid_field" name="model[]" id="fName" aria-describedby=""
                      placeholder="25. Model" value="<?php echo (!empty($firearms[0]['model']))?$firearms[0]['model']:'';?>">
               </span></div>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control multi-in-one" name="serial_number[]" id="fName" aria-describedby=""
+                                <input type="text" class="form-control multi-in-one f_SN_26 secB_valid_field" name="serial_number[]" id="fName" aria-describedby=""
                                        placeholder="26. Serial Number" value="<?php echo (!empty($firearms[0]['serial_number']))?$firearms[0]['serial_number']:'';?>">
                             </div>
                             <div class="col-sm-2"> <span class="d-inline-block" tabindex="0" data-toggle="tooltip"
                                                          title=" (See Instructions for Question 27.)"
                                                          style="width:100%">
-              <input type="text" class="form-control multi-in-one" name="type[]" id="fName" aria-describedby=""
+              <input type="text" class="form-control multi-in-one f_type_17 secB_valid_field" name="type[]" id="fName" aria-describedby=""
                      placeholder="27. Type"  value="<?php echo (!empty($firearms[0]['type']))?$firearms[0]['type']:'';?>">
               </span></div>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control multi-in-one" name="caliber_gauge[]" id="fName" aria-describedby=""
+                                <input type="text" class="form-control multi-in-one f_calibar-28 secB_valid_field" name="caliber_gauge[]" id="fName" aria-describedby=""
                                        placeholder="28. Caliber/Gauge" value="<?php echo (!empty($firearms[0]['caliber_gauge']))?$firearms[0]['caliber_gauge']:'';?>">
                             </div>
                         </div>
@@ -304,3 +304,21 @@
         </div>
     </div>
 </form>
+
+<div class="modal" id="error_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="show_error1"></div>
+                <div class="show_error"></div>
+            </div>
+        </div>
+    </div>
+</div>

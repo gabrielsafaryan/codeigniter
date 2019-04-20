@@ -8,10 +8,9 @@
         </div>
     </div>
 </div>
-
 <!--Main Content-->
 <?= form_open_multipart('form', array('id' => 'buyerForm')); ?>
-
+<input type="hidden" name="id" value="<?php echo (!empty($record['id']))?$record['id']:'';?>">
 <!-- Personal Info-->
 <div class="row">
     <div class="col-sm card-3">
@@ -22,13 +21,13 @@
                     <label for="">Name</label>
                     <input type="text" class="form-control multi-in-one" name="fName"
                            aria-describedby=""
-                           placeholder="First Name">
+                           placeholder="First Name" value="<?php echo (!empty($record['first_name_1']))?$record['first_name_1']:'';?>">
                     <input type="text" class="form-control multi-in-one" name="mName"
                            aria-describedby=""
-                           placeholder="Middle Name">
+                           placeholder="Middle Name"  value="<?php echo (!empty($record['middle_name_1']))?$record['middle_name_1']:'';?>">
                     <input type="text" class="form-control multi-in-one" name="lName"
                            aria-describedby=""
-                           placeholder="Last Name">
+                               placeholder="Last Name" value="<?php echo (!empty($record['last_name_1']))?$record['last_name_1']:'';?>">
                 </div>
                 <hr/>
                 <div class="form-group">
@@ -37,12 +36,13 @@
 
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-sm">
+                            <div class="col-md-7">
                                 <div class="multi-in-one">
-                                    <input id="datepicker" name="datepicker" alt="date"/>
+                                    <input id="datepicker" name="datepicker" alt="date"
+                                           value="<?php echo (!empty($record['birth_date_7']))?date('F d Y', strtotime($record['birth_date_7'])):'';?>" />
                                 </div>
                             </div>
-                            <div class="col-sm">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                         <label class="btn btn-secondary active">
@@ -63,31 +63,30 @@
                             <!--<div class="col-sm">
                               <input type="text" class="form-control multi-in-one" id="lName" aria-describedby="" placeholder="Zip">
                             </div>-->
-                            <div class="col-sm">
+                            <div class="col-md-6">
                                 <select class="form-control" name="birthState">
                                     <option value="">State</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
+                                     <?php
+                                     if(!empty($states)){
+                                         foreach ($states as $index => $val){
+                                             $k = ($record['birth_state_3'] == $val['state'])?'selected':'';
+                                             ?>
+                                             <option <?php echo $k; ?> value="<?php echo $val['state']?>"><?php echo $val['state']?></option>
+                                         <?php } }  ?>
                                 </select>
                             </div>
-                            <div class="col-sm">
-                                <select class="form-control" name="birthCity">
-                                    <option value="">City</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control multi-in-one" name="birthCity"
+                                       aria-describedby=""
+                                       placeholder="" value="<?php echo (!empty($record['birth_city_3']))?$record['birth_city_3']:'';?>">
                             </div>
                             <div class="col-sm">
                                 <select class="form-control multi-in-one" id="foreignCountry" name="foreignCountry">
                                     <option value="">Country</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
+                                    <option <?php echo (!empty($record['birth_country_3']) && $record['birth_country_3'] == 2)?'selected':'' ?> value="2">2</option>
+                                    <option <?php echo (!empty($record['birth_country_3']) && $record['birth_country_3'] == 3)?'selected':'' ?> value="3">3</option>
+                                    <option <?php echo (!empty($record['birth_country_3']) && $record['birth_country_3'] == 4)?'selected':'' ?> value="4">4</option>
+                                    <option <?php echo (!empty($record['birth_country_3']) && $record['birth_country_3'] == 5)?'selected':'' ?> value="5">5</option>
                                 </select>
                             </div>
                         </div>
@@ -98,26 +97,27 @@
                         <div class="col-sm">
                             <div class="input-group">
                                 <input type="text" aria-label="" placeholder="ft" class="form-control"
-                                       name="height-ft">
+                                       name="height-ft" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['ft']:'';?>">
                                 <input type="text" aria-label="" placeholder="in" class="form-control"
-                                       name="height-in">
+                                       name="height-in" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['in']:'';?>">
                             </div>
                         </div>
 
                         <div class="col-sm">
                             <input type="text" class="form-control multi-in-one" aria-describedby=""
-                                   placeholder="lb" name="weight">
+                                   placeholder="lb" name="weight" value="<?php echo (!empty($record['weight_5']))? kg2pound($record['weight_5']):'';?>">
                         </div>
                         <div class="col-sm">
                             <div class="form-group">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
                                         <input type="radio" name="gender" autocomplete="off"
-                                               value="Male" checked>
+                                               value="Male" <?php echo (!empty($record['gender_6']) && $record['gender_6'] == 'Male')?'checked':'' ?>>
                                         M
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" value="Female" name="gender" autocomplete="off">
+                                        <input type="radio" value="Female" name="gender" autocomplete="off"
+                                            <?php echo (!empty($record['gender_6']) && $record['gender_6'] == 'Female')?'checked':'' ?>>
                                         F
                                     </label>
                                 </div>
@@ -130,37 +130,39 @@
     </div>
     <div class="col-sm card-3">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body" id="sectionA_container">
                 <h5 class="card-title"><i class="fas fa-map-marker-alt"></i> Addresses</h5>
                 <label for="name">Home Address</label>
                 <input type="text" class="form-control multi-in-one" aria-describedby=""
-                       placeholder="Address 1" name="homeAddress1">
+                       placeholder="Address 1" name="homeAddress1"
+                       value="<?php echo (!empty($record['home_address1_2']))?$record['home_address1_2']:'';?>">
                 <input type="text" class="form-control multi-in-one" aria-describedby=""
-                       placeholder="Address 2" name="homeAddress2">
+                       placeholder="Address 2" name="homeAddress2"
+                       value="<?php echo (!empty($record['home_address2_2']))?$record['home_address2_2']:'';?>">
                 <div class="row">
                     <div class="col-sm">
                         <input type="text" class="form-control multi-in-one" aria-describedby=""
-                               placeholder="Zip" name="homeZip">
+                               placeholder="Zip" name="homeZip" id="sectionA_zip"
+                               value="<?php echo (!empty($record['home_zip_2']))?$record['home_zip_2']:'';?>">
                     </div>
                     <div class="col-sm">
                         <select class="form-control multi-in-one" name="homeState">
                             <option value="">State</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                            <?php
+                            if(!empty($states)){
+                                foreach ($states as $index => $val){
+                                    $k = ($record['home_state_2'] == $val['state'])?'selected':'';
+                                    ?>
+                                    <option <?php echo $k;?> value="<?php echo $val['state']?>"><?php echo $val['state']?></option>
+                                <?php } }  ?>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm">
-                        <select class="form-control" name="homeCity">
-                            <option value="">City</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>
+                        <input type="text" class="form-control multi-in-one" name="homeCity"
+                               aria-describedby="" id="sectionA_city"
+                               placeholder="City" value="<?php echo (!empty($record['home_city_2']))?$record['home_city_2']:'';?>">
                     </div>
                 </div>
 
@@ -168,10 +170,13 @@
                 <label for="name">State of Residency &amp; Citizenship</label>
                 <select class="form-control multi-in-one" name="residencyState">
                     <option value="">State</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
+                    <?php
+                    if(!empty($states)){
+                        foreach ($states as $index => $val){
+                            $k = ($record['home_county_2'] == $val['state'])?'selected':'';
+                            ?>
+                            <option <?php echo $k;?> value="<?php echo $val['state']?>"><?php echo $val['state']?></option>
+                        <?php } }  ?>
                 </select>
                 <div class="row">
                     <div class="col-sm">
@@ -179,12 +184,12 @@
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-secondary active">
                                     <input type="radio" name="residencyCountry"
-                                           autocomplete="off" value="1" checked>
+                                           autocomplete="off" value="1" >
                                     US
                                 </label>
                                 <label class="btn btn-secondary">
                                     <input type="radio" name="residencyCountry"
-                                           autocomplete="off" value="0">
+                                           autocomplete="off" value="0" >
                                     Other
                                 </label>
                             </div>
@@ -623,14 +628,14 @@
                     <div class="col-sm">
                         <div class="form-group">
                             <label for="name">Social Security Number</label>
-                            <input type="text" class="form-control" name="socialSecNumber" aria-describedby=""
+                            <input type="text" class="form-control not_string socialSecNumber" name="socialSecNumber" aria-describedby=""
                                    placeholder="Social Security">
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="form-group">
                             <label for="name">Phone </label>
-                            <input type="text" class="form-control" name="phoneNumber" aria-describedby=""
+                            <input type="text" class="form-control phoneNumber" name="phoneNumber" aria-describedby=""
                                    placeholder="Phone">
                         </div>
                     </div>
@@ -672,7 +677,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-12 signature_text">
                         <small>I certify that my answers in Section A are true, correct, and complete. I have
                             read
                             and understand the Notices, Instructions, and Definitions on ATF Form 4473. I
@@ -701,11 +706,10 @@
                             law.
                             <em>(See Instructions for Question 14.)</em></small>
                     </div>
-                    <div class="col-md-4">
-                        <canvas class="multi-in-one" id="signature" width="320" height="150"
+                    <div class="col-md-12">
+                        <canvas class="multi-in-one" id="signature" width="1050" height="320"
                                 style="border: 1px solid #ddd; border-radius: 5px; float:right"></canvas>
-
-                        <button type="submit" class="btn btn-success btn-block" id="submit">Submit</button>
+                        <button type="button" class="btn btn-success btn-block right-class col-2" id="submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -713,3 +717,20 @@
     </div>
 </div>
 <?php form_close(); ?>
+
+<div class="modal" id="error_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body ">
+                <div class="show_error"></div>
+                <div class="show_error1"></div>
+            </div>
+        </div>
+    </div>
+</div>
