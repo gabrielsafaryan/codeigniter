@@ -87,7 +87,7 @@ class Google_api
 
         foreach ($result->results[0]->address_components as $val){
 
-            if($val->types[0] == 'locality' || $val->types[1]){
+            if($val->types[0] == 'locality'){
                 $return_data['city'] = $val->long_name;
             }
 
