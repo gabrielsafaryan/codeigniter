@@ -293,7 +293,7 @@ class FormsListController extends CI_Controller
                     $value = date('M d Y', strtotime($v));
                 } elseif ($filter[$k]['type'] === 'blob') {
 
-                    $url = base_url() . 'public/images/' . $v;
+                    $url = base_url() . 'public/images/'.$record['id'].'/' . $v;
                     $value = "<img src='$url' alt='Signature'/>";
 
                 } else {

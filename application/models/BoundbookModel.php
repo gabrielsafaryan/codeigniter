@@ -45,16 +45,34 @@ class BoundbookModel extends CI_Model
         return $queryResult->row_array();
     }
 
-    public function update_boundook($id,$data){
+    public function update_boundook($id, $data)
+    {
 
-        if(empty($id) || empty($data)){
+        if (empty($id) || empty($data)) {
 
             return false;
         }
 
-        $this->db->where('id',$id);
+        $this->db->where('id', $id);
 
-        return $this->db->update('boundbook_4473',$data);
+        return $this->db->update('boundbook_4473', $data);
+    }
+
+    public function search_zip($zip)
+    {
+
+        if (empty($zip)) {
+
+            return false;
+        }
+
+        $this->db->select('zipcodeses.id, zipcodeses.zip, zipcodeses.city, zipcodeses.state_iso2, states.state');
+        $this->db->from('zipcodeses');
+        $this->db->join('states', 'zipcodeses.state_iso2=states.state_code');
+        $this->db->like('zipcodeses.zip', $zip, 'after');
+        $Result = $this->db->get()->result_array();
+
+        return $Result;
     }
 
 }

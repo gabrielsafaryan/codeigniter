@@ -141,12 +141,13 @@
                        value="<?php echo (!empty($record['home_address2_2']))?$record['home_address2_2']:'';?>">
                 <div class="row">
                     <div class="col-sm">
-                        <input type="text" class="form-control multi-in-one" aria-describedby=""
+                        <input type="text" class="form-control multi-in-one search_zip_code zip" aria-describedby=""
                                placeholder="Zip" name="homeZip" id="sectionA_zip"
                                value="<?php echo (!empty($record['home_zip_2']))?$record['home_zip_2']:'';?>">
+                             <div class="zip_answer" id="homeZip_div" style="display: none;"></div>
                     </div>
                     <div class="col-sm">
-                        <select class="form-control multi-in-one" name="homeState">
+                        <select class="form-control multi-in-one state" name="homeState">
                             <option value="">State</option>
                             <?php
                             if(!empty($states)){
@@ -160,7 +161,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm">
-                        <input type="text" class="form-control multi-in-one" name="homeCity"
+                        <input type="text" class="form-control multi-in-one city" name="homeCity"
                                aria-describedby="" id="sectionA_city"
                                placeholder="City" value="<?php echo (!empty($record['home_city_2']))?$record['home_city_2']:'';?>">
                     </div>

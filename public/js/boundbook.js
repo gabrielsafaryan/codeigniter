@@ -179,12 +179,12 @@ $(document).ready(function () {
 
                     $('#responseModalLabel').html('Error');
                     $('.modal-body').html('<div><span class="error_img"></span> <span class="error_class">' + obj['errors'][0] + '</span></div>');
-                }
 
-                if (response.status === 'success') {
+                }else{
                     $('#responseModalLabel').html(response.status);
                     $('.modal-body').html(response.message);
                 }
+
             })
             .fail(function (error) {
 
@@ -638,4 +638,38 @@ function processing(procent) {
 
 $('.no_href').click(function (e) {
     e.preventDefault();
+});
+
+$(document).on("keyup", ".search_zip_code", function(){
+
+    var inpid  = $(this).attr("name");
+    var ans    = "#"+inpid+"_div";
+
+    var search = {search:this.value, inputid:inpid};
+
+    var url = base_url+"BoundbookController/ax_search_zip_code";
+
+    if(this.value.length != 5){
+
+        $(ans).css('display', 'none');
+
+        return false;
+    }
+
+    var sucfunc = '$("'+ans+'").addClass("show_single")';
+
+
+    send_ajax(url, 'post', search, {answer:ans, success:sucfunc});
+});
+
+$(document).on("click",".single_zip_div",function() {
+    var inputid = "#"+$(this).attr("data-input");
+    var zip = $(this).attr("data-zip");
+    $(inputid).val(zip);
+    $(inputid+"_div").css("display", "none");
+    $(this).parent().removeClass('show_single');
+    $(this).parents('.card-body').find('.city').val( $(this).attr("data-city"));
+    $(this).parents('.card-body').find('.zip').val($(this).attr("data-zip"));
+
+    $(this).parents('.card-body').find('.state').find("option[value='"+$(this).attr("data-state")+"']").prop('selected',true);
 });

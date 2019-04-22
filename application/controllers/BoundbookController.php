@@ -69,7 +69,7 @@ class BoundbookController extends CI_Controller
         $image_name = '';
 
         $data['errors'] = [];
-
+        $data['success'] = [];
         $record = '';
 
         if(!empty($formData['id'])){
@@ -102,7 +102,7 @@ class BoundbookController extends CI_Controller
             'birth_date_7' => $formData['datepicker'] ? date('Y-m-d H:i:s', strtotime($formData['datepicker'])) : null,
             'height_4' => feetIn2Cm($formData['height-ft'], $formData['height-in']),
             'weight_5' => round($formData['weight'], 2),
-            'gender_6' => $formData['gender'],
+            'gender_6' => (empty($formData['gender'])?'Male':$formData['gender']),
             'home_address1_2' => $formData['homeAddress1'],
             'home_address2_2' => $formData['homeAddress2'],
             'home_city_2' => $formData['homeCity'],
@@ -145,7 +145,9 @@ class BoundbookController extends CI_Controller
             $return_id = $this->boundbook->saveFromData($data);
 
             if (!$return_id) {
-                return $this->output->set_status_header(500)->set_content_type('application/json')->set_output(array('error' => 'An error has occurred, please try again!'));
+                $data['errors'][] = 'An error has occurred, please try again!';
+                echo json_encode($data);
+                return false;
             }
         }else{
             $this->boundbook->update_boundook($formData['id'], $data);
@@ -164,11 +166,10 @@ class BoundbookController extends CI_Controller
 
             file_put_contents($dir . '/' . $image_name, $signature);
         }
-
-        return $this->output
-            ->set_status_header(200)
-            ->set_content_type('application/json')
-            ->set_output(json_encode(array('status' => 'success', 'message' => 'Your information successfully saved.')));
+        $data['success'][] = 'Your information successfully saved.';
+        $data['status'][] = 'success';
+        echo json_encode($data);
+        return false;
     }
 
     /**
@@ -671,5 +672,33 @@ class BoundbookController extends CI_Controller
         $this->boundbook->update_boundook($rec_id, $boundock_update_data);
 
         echo json_encode($data);
+    }
+
+    public function ax_search_zip_code(){
+
+        if ($this->input->method() != 'post' || !$this->input->is_ajax_request()) {
+            show_404();
+            return false;
+        }
+
+        $this->load->library('google_api');
+
+        $zip = trim($this->input->post("search"));
+        $input_id = $this->input->post("inputid");
+
+        $zipcode_array = $this->google_api->get_place_id($zip);
+
+        if(empty($zipcode_array)){
+            echo "no data";
+            return false;
+        }
+
+        $zipcode_array['zip'] = $zip;
+
+        $data = [
+            "zip_codes_array" => $zipcode_array,
+            "input_id" => $input_id
+        ];
+        $this->load->view('pages/answer_zip_code', $data);
     }
 }
