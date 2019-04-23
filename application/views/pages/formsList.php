@@ -1,6 +1,6 @@
 <div class="mt-5">
     <button type="button" class="btn btn-success">
-        <a href="<?php echo base_url('fill_sectionA');?>" class="secA_lnk">New 4473</a>
+        <a href="<?php echo $this->config->item('file_url').'fill_sectionA';?>" class="secA_lnk">New 4473</a>
     </button>
     <div class="searchBox">
         <select name="" id="search_crt" class="form-control col-md-5">

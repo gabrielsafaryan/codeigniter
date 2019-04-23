@@ -43,9 +43,7 @@ else
     }
 }
 
-$config['file_url'] = $base_url;
-
-$base_url =$base_url.'index.php/';
+$config['file_url'] = $base_url.'index.php/';
 
 $config['base_url'] = $base_url;
 
