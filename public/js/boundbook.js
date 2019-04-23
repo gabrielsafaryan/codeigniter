@@ -260,7 +260,7 @@ $(document).ready(function () {
                 title: "Download",
                 orderable: false,
                 render: function (data, type, row) {
-                    return `<a class="pdf-download" href="${base_url}pdf/download?id=${row.id}"> 
+                    return `<a class="pdf-download" href="${base_url}FormsListController/pdfDownload/${row.id}"> 
                               <button class="btn btn-success pdf-download">PDF</button>
                             </a>`;
                 }

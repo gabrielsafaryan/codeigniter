@@ -68,12 +68,14 @@ class FormsListController extends CI_Controller
             ->set_output(json_encode($result));
     }
 
-    public function pdfDownload()
+    public function pdfDownload($id=null)
     {
-        if (empty($this->input->get('id'))) {
-            return $this->output->set_status_header(400)->set_content_type('application/json')->set_output(array('error' => 'An error has occurred, please try again!'));
+
+        if(empty($id)){
+            show_404();
+            return false;
         }
-        $id = $this->input->get('id');
+
         $this->load->model('BoundbookModel', 'boundbook');
         $this->load->model('SecD_firearms_model', 'SecD_firearms');
         $this->load->helper(array('measure', 'date'));
