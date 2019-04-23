@@ -68,8 +68,8 @@ class BoundbookController extends CI_Controller
         $this->load->helper('measure');
         $image_name = '';
 
-        $data['errors'] = [];
-        $data['success'] = [];
+        $return_data['errors'] = [];
+        $return_data['success'] = [];
         $record = '';
 
         if(!empty($formData['id'])){
@@ -79,8 +79,8 @@ class BoundbookController extends CI_Controller
 
         if ($this->input->post('signature') == '' && empty($record['signature_14'])) {
 
-            $data['errors'][] = 'Signature field is required.';
-            echo json_encode($data);
+            $return_data['errors'][] = 'Signature field is required.';
+            echo json_encode($return_data);
             return false;
         }
 
@@ -145,7 +145,7 @@ class BoundbookController extends CI_Controller
             $return_id = $this->boundbook->saveFromData($data);
 
             if (!$return_id) {
-                $data['errors'][] = 'An error has occurred, please try again!';
+                $return_data['errors'][] = 'An error has occurred, please try again!';
                 echo json_encode($data);
                 return false;
             }
@@ -166,9 +166,10 @@ class BoundbookController extends CI_Controller
 
             file_put_contents($dir . '/' . $image_name, $signature);
         }
-        $data['success'][] = 'Your information successfully saved.';
-        $data['status'][] = 'success';
-        echo json_encode($data);
+
+        $return_data['success'][] = 'Your information successfully saved.';
+        $return_data['status'][] = 'success';
+        echo json_encode($return_data);
         return false;
     }
 

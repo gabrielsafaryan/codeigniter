@@ -181,8 +181,8 @@ $(document).ready(function () {
                     $('.modal-body').html('<div><span class="error_img"></span> <span class="error_class">' + obj['errors'][0] + '</span></div>');
 
                 }else{
-                    $('#responseModalLabel').html(response.status);
-                    $('.modal-body').html(response.message);
+                    $('#responseModalLabel').html(obj.status);
+                    $('.modal-body').html(obj['success']);
                 }
 
             })
