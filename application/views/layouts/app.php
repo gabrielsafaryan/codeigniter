@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="<?= base_url('/public/css/boundbook.css'); ?>" rel="stylesheet" type="text/css"/>
 
     <script>
-        base_url = '<?php echo base_url();?>';
+        base_url = '<?php echo base_url().'index.php/';?>';
         action = '<?php echo $this->router->fetch_method(); ?>';
     </script>
 </head>
