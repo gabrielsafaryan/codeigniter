@@ -4,23 +4,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!doctype html>
 <html lang="en">
 <head>
+    <?php
+    $base_url = $this->config->item('file_url')
+    ?>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="<?php echo base_url('public/css/bootstrap.min.css')?>">
-    <link rel="stylesheet" href="<?php echo base_url('public/css/gijgo.min.css')?>">
+    <link rel="stylesheet" href="<?php echo $base_url.'public/css/bootstrap.min.css'?>">
+    <link rel="stylesheet" href="<?php echo $base_url.'public/css/gijgo.min.css'?>">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
     integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link rel="stylesheet" href="<?php echo base_url('public/css/datatables.min.css')?>">
+    <link rel="stylesheet" href="<?php echo $base_url.'public/css/datatables.min.css'?>">
 
     <title>Coreware</title>
     <link href="https://unpkg.com/gijgo@1.9.11/css/gijgo.min.css" rel="stylesheet" type="text/css"/>
-    <link href="<?= base_url('/public/css/boundbook.css'); ?>" rel="stylesheet" type="text/css"/>
+    <link href="<?=$base_url.'/public/css/boundbook.css'; ?>" rel="stylesheet" type="text/css"/>
 
     <script>
-        base_url = '<?php echo base_url().'index.php/';?>';
+        base_url = '<?php echo base_url();?>';
         action = '<?php echo $this->router->fetch_method(); ?>';
     </script>
 </head>
