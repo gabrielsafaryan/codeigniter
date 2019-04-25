@@ -140,3 +140,7 @@ span.error_class {
     background: #c1c1c1;
     padding: 7px 2px;
 }
+
+.modal-backdrop {
+    background-color: #0000002e!important;
+}

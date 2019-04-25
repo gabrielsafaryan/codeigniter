@@ -37,9 +37,10 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-7">
-                                <div class="multi-in-one">
+
+                                <div class="multi-in-one" style="width: 109%">
                                     <input id="datepicker" name="datepicker" alt="date"
-                                           value="<?php echo (!empty($record['birth_date_7']))?date('F d Y', strtotime($record['birth_date_7'])):'';?>" />
+                                           value="<?php echo (!empty($record['birth_date_7']))?$record['birth_date_7']:'';?>" readonly style="font-size: 14px; padding: 1px;" />
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -97,9 +98,9 @@
                         <div class="col-sm">
                             <div class="input-group">
                                 <input type="text" aria-label="" placeholder="ft" class="form-control"
-                                       name="height-ft" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['ft']:'';?>">
+                                       name="height_ft" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['ft']:'';?>">
                                 <input type="text" aria-label="" placeholder="in" class="form-control"
-                                       name="height-in" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['in']:'';?>">
+                                       name="height_in" value="<?php echo (!empty($record['height_4']))? cm2feetIn($record['height_4'])['in']:'';?>">
                             </div>
                         </div>
 

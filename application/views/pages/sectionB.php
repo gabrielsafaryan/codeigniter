@@ -2,7 +2,7 @@
     <div class="col-sm">
         <div class="card">
             <div class="card-body">
-                <h2 class="card-title">Section B - Must Be Completed By Transferor/Seller</h2>
+                <h2 class="card-title">Section B & C - Must Be Completed By Transferor/Seller</h2>
             </div>
         </div>
     </div>
@@ -477,7 +477,7 @@
                         <div class="row">
                             <div class="col-md-12 signature_text">
                                 <h5>
-                                    For Denied/Cancelled Transactions, the Person Who Completed Section B Must Complete
+                                    For Denied/Cancelled Transactions, the Person Who Completed Section B & C Must Complete
                                     Questions 34-36.</h5>
                                 <small>I certify that: (1) I have read and understand the Notices, Instructions, and
                                     Definitions on this ATF Form 4473; (2) the information recorded in Sections B and D

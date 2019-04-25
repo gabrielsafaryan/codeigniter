@@ -104,7 +104,8 @@ class PdfForm
         $fdf = $this->makeFdf($this->data);
         $this->output = $this->tmpfile();
 
-        $path = FCPATH.'/public/created_ci.pdf';
+        $path = FCPATH.'public\created_ci.pdf';
+
         exec("pdftk {$this->pdfUrl} fill_form {$fdf} output {$path} {$this->flatten}");
 
         //unlink($fdf);
@@ -145,6 +146,8 @@ class PdfForm
         if (!$this->output) {
             $this->generate();
         }
+
+        var_dump(FCPATH);
 
         $path = FCPATH.'/public/created_ci.pdf';
         $this->CI->fpdf->AddPage();

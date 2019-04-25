@@ -100,7 +100,7 @@ class BoundbookController extends CI_Controller
             'birth_state_3' => $formData['birthState'],
             'birth_country_3' => $formData['foreignCountry'],
             'birth_date_7' => $formData['datepicker'] ? date('Y-m-d H:i:s', strtotime($formData['datepicker'])) : null,
-            'height_4' => feetIn2Cm($formData['height-ft'], $formData['height-in']),
+            'height_4' => feetIn2Cm($formData['height_ft'], $formData['height_in']),
             'weight_5' => round($formData['weight'], 2),
             'gender_6' => (empty($formData['gender'])?'Male':$formData['gender']),
             'home_address1_2' => $formData['homeAddress1'],
@@ -221,12 +221,12 @@ class BoundbookController extends CI_Controller
                 'rules' => 'trim|xss_clean|strip_tags'
             ),
             array(
-                'field' => 'height-ft',
+                'field' => 'height_ft',
                 'label' => 'Height foot',
                 'rules' => 'trim|xss_clean|strip_tags'
             ),
             array(
-                'field' => 'height-in',
+                'field' => 'height_in',
                 'label' => 'Height inches',
                 'rules' => 'trim|xss_clean|strip_tags'
             ),

@@ -72,10 +72,23 @@ $('.phoneNumber').on('keypress', function () {
 });
 
 $(document).ready(function () {
+    var dt = new Date();
+    var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
-    $('#datepicker').datepicker({
-        uiLibrary: 'bootstrap4'
-    });
+
+    if(action == 'fill_sectionA'){
+
+        $('#datepicker').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd'
+
+        })
+            .change(function () {
+                console.log($(this).val());
+
+                $(this).val($(this).val()+ ' '+ time)
+            });
+    }
 
     let signaturePad;
     if (document.getElementById('signature')) {
@@ -118,6 +131,8 @@ $(document).ready(function () {
             datepicker: {errorname: 'Date & Place of Birth', required: true},
             birthState: {errorname: 'State', required: true},
             birthCity: {errorname: 'City', required: true},
+            height_ft: {errorname: 'Height feet', required: true},
+            height_in: {errorname: 'Height inch', required: true},
             weight: {errorname: 'Weight', required: true},
             homeAddress1: {errorname: 'Address 1', required: true},
             homeZip: {errorname: 'Zip Code', required: true},
@@ -672,4 +687,9 @@ $(document).on("click",".single_zip_div",function() {
     $(this).parents('.card-body').find('.zip').val($(this).attr("data-zip"));
 
     $(this).parents('.card-body').find('.state').find("option[value='"+$(this).attr("data-state")+"']").prop('selected',true);
+});
+
+$('#responseModal').on('hidden.bs.modal', function (e) {
+
+    location.replace(base_url);
 });
