@@ -691,5 +691,8 @@ $(document).on("click",".single_zip_div",function() {
 
 $('#responseModal').on('hidden.bs.modal', function (e) {
 
+    if(action == 'index'){
+        return false;
+    }
     location.replace(base_url);
 });
